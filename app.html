@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Find a bikerack - Chi</title>
+  </head>
+  <body>
+
+  </body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+  function closestBikeRack(lat,lon) {
+    var field_names=["RackID","Address","Ward","Community Area","Community Name","TotInstall","Latitude","Longitude","Historical","F12","F13","LOCATION","Boundaries - ZIP Codes","Community Areas","Zip Codes","Census Tracts","Wards",":@computed_region_awaf_s7ux"];
+    var target_rack={
+            "Latitude": 0,
+            "Longitude": 0,
+            "RackID": 0,
+            "Distance": 10000
+        };
+    var dist = 0
+    $(document).ready(function(){
+      $.getJSON("https://data.cityofchicago.org/resource/cbyb-69xx.json", function(result){
+        $.each(result, function(i, rack){
+          // console.log(rack)
+          // console.log(rack["latitude"])
+          dist=(lat-(rack["latitude"]))**2+(lon-(rack["longitude"]))**2
+          // console.log(dist)
+          if (dist<target_rack["Distance"]){
+            console.log("Found something closer")
+            // console.log(rack)
+            // console.log(dist)
+            target_rack={
+                "Latitude": rack["latitude"],
+                "Longitude": rack["longitude"],
+                "RackID": rack["rackid"],
+                "Distance": dist
+            }
+            console.log(target_rack)
+          }
+        });
+        console.log("Closest bike rack")
+        console.log(target_rack)
+        $("div").append(target_rack["RackID"]);
+        return target_rack
+      });
+    });
+        // https://data.cityofchicago.org/resource/cbyb-69xx.json
+  };
+</script>
+
+<body>
+
+<button>Get JSON data</button>
+<br>
+<div></div>
+
+</body>
