@@ -5,26 +5,51 @@
     <title>Find a bikerack - Chi</title>
   </head>
   <body>
-
+    <form>
+      <label for="lat">Latitude</label>
+      <input type="text" name="lat" value="">
+      <br>
+      <label for="lon">Longitude</label>
+      <input type="text" name="lon" value="">
+      <br>
+      <input type="button" id=submit_button value="Submit">
+    </form>
+    <br>
+    <div></div>
   </body>
 </html>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <script type="text/javascript">
-  function closestBikeRack(lat,lon) {
-    var field_names=["RackID","Address","Ward","Community Area","Community Name","TotInstall","Latitude","Longitude","Historical","F12","F13","LOCATION","Boundaries - ZIP Codes","Community Areas","Zip Codes","Census Tracts","Wards",":@computed_region_awaf_s7ux"];
-    var target_rack={
-            "Latitude": 0,
-            "Longitude": 0,
-            "RackID": 0,
-            "Distance": 10000
-        };
-    var dist = 0
-    $(document).ready(function(){
-      $.getJSON("https://data.cityofchicago.org/resource/cbyb-69xx.json", function(result){
+
+  // function closestBikeRack(lat,lon) {
+  var field_names=["RackID","Address","Ward","Community Area","Community Name","TotInstall","Latitude","Longitude","Historical","F12","F13","LOCATION","Boundaries - ZIP Codes","Community Areas","Zip Codes","Census Tracts","Wards",":@computed_region_awaf_s7ux"];
+  var target_rack={
+          "Latitude": 0,
+          "Longitude": 0,
+          "RackID": 0,
+          "Distance": 10000
+      };
+  var dist = 0
+  var input = document.getElementById("submit_button");
+
+  $(document).ready(function(){
+    $.getJSON("https://data.cityofchicago.org/resource/cbyb-69xx.json", function(result){
+      $("#submit_button").click(function(e){
+        input_array=$('form').serializeArray()
+        console.log(JSON.stringify(input_array))
+        // console.log(input_array.length)
+        for (i=0; i<input_array.length; i++){
+          if (input_array[i]["name"]=="lat") {
+            lat=input_array[i]["value"]
+          };
+          if (input_array[i]["name"]=="lon") {
+            lon=input_array[i]["value"]
+          }
+        }
         $.each(result, function(i, rack){
-          // console.log(rack)
+        // console.log(rack)
           // console.log(rack["latitude"])
           dist=(lat-(rack["latitude"]))**2+(lon-(rack["longitude"]))**2
           // console.log(dist)
@@ -40,21 +65,20 @@
             }
             console.log(target_rack)
           }
-        });
-        console.log("Closest bike rack")
-        console.log(target_rack)
-        $("div").append(target_rack["RackID"]);
-        return target_rack
+          });
+          console.log("Closest bike rack")
+          console.log(target_rack)
+          $("div").append(target_rack["RackID"]);
+          return target_rack
       });
     });
+  });
+// };
         // https://data.cityofchicago.org/resource/cbyb-69xx.json
-  };
+  // function getFormData(){
+  //   $(document).ready(function(){
+  //     return $('form').serialize()
+  //   }
+  // }
+
 </script>
-
-<body>
-
-<button>Get JSON data</button>
-<br>
-<div></div>
-
-</body>
