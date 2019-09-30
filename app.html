@@ -3,14 +3,18 @@
   <head>
     <meta charset="utf-8">
     <title>Find a bikerack - Chi</title>
+    <LINK REL=StyleSheet HREF="style.css" TYPE="text/css" MEDIA=screen>
   </head>
   <body>
+    <!-- <div id="map"></div> -->
+    <!-- <embed  src="#" width="300" height="300"> -->
+
     <form>
       <label for="lat">Latitude</label>
-      <input type="text" name="lat" value="">
+      <input id="latitude" type="text" name="lat" value="">
       <br>
       <label for="lon">Longitude</label>
-      <input type="text" name="lon" value="">
+      <input id="longitude" type="text" name="lon" value="">
       <br>
       <input type="button" id=submit_button value="Submit">
     </form>
@@ -34,6 +38,47 @@
   var dist = 0
   var input = document.getElementById("submit_button");
 
+  // var map, infoWindow;
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      document.getElementById("longitude").value=pos["lng"]
+      document.getElementById("latitude").value=pos["lat"]
+    });
+  };
+  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+      'Error: The Geolocation service failed.' :
+      'Error: Your browser doesn\'t support geolocation.');
+      infoWindow.open(map);
+    }
+      // function initMap() {
+      //   map = new google.maps.Map(document.getElementById('map'), {
+      //     center: {lat: -41.881832, lng: -87.623177},
+      //     zoom: 6
+      //   });
+      //   infoWindow = new google.maps.InfoWindow;
+      //
+      //   // Try HTML5 geolocation.
+      //
+      //       infoWindow.setPosition(pos);
+      //       infoWindow.setContent('Location found.');
+      //       infoWindow.open(map);
+      //       map.setCenter(pos);
+      //     }, function() {
+      //       handleLocationError(true, infoWindow, map.getCenter());
+      //     });
+      //   } else {
+      //     // Browser doesn't support Geolocation
+      //     handleLocationError(false, infoWindow, map.getCenter());
+      //   }
+      // }
+      //
   $(document).ready(function(){
     $.getJSON("https://data.cityofchicago.org/resource/cbyb-69xx.json", function(result){
       $("#submit_button").click(function(e){
@@ -60,6 +105,7 @@
             target_rack={
                 "Latitude": rack["latitude"],
                 "Longitude": rack["longitude"],
+                "Address": rack["address"],
                 "RackID": rack["rackid"],
                 "Distance": dist
             }
@@ -68,7 +114,9 @@
           });
           console.log("Closest bike rack")
           console.log(target_rack)
-          $("div").append(target_rack["RackID"]);
+          $("div").append("Address: "+target_rack["Address"]+"<br>");
+          $("div").append(target_rack["Latitude"].toString()+"<br>");
+          $("div").append(target_rack["Longitude"].toString()+"<br>");
           return target_rack
       });
     });
